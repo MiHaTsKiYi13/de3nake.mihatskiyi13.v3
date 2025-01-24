@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сборка виндовс</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icon.jpg" type="image/jpg">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://CODED.BY.MIHATSKIYI13.org') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Верхняя панель */
+        .top-panel {
+            background-color: rgba(0, 0, 0, 0.259); /* Сделал прозрачнее */
+            padding: 10px;
+            text-align: center;
+            font-size: 1.2em;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Логотип в левой части панели */
+        .top-panel img {
+            height: 40px;
+            margin-right: 20px;
+        }
+
+/* Стрелки навигации с современным видом */
+.nav-arrow {
+    font-size: 2em;
+    color: rgba(255, 255, 255, 0.7); /* Сделал стрелки более прозрачными */
+    transition: transform 0.3s ease, color 0.3s ease, opacity 0.3s ease, filter 0.2s ease; /* Добавлен эффект фильтра */
+    margin: 0 20px;
+    cursor: pointer;
+}
+
+/* Эффект наведения: яркая и плавная анимация */
+.nav-arrow:hover {
+    color: #00b0ff;
+    transform: translateX(-5px) scale(1.3); /* Плавное смещение и увеличение */
+    opacity: 1; /* Убираем прозрачность при наведении */
+    filter: drop-shadow(0 0 10px rgba(0, 176, 255, 0.6)); /* Светящийся эффект */
+}
+
+/* Эффект при клике: легкое уменьшение с пульсацией */
+.nav-arrow:active {
+    transform: scale(1.1) translateX(-2px); /* Легкое уменьшение и смещение */
+    filter: none; /* Убираем светящийся эффект при клике */
+}
+
+        .top-panel span {
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: font-size 0.3s ease, color 0.3s ease;
+        }
+
+        .top-panel span:hover {
+            color: #00b0ff;
+            font-size: 1.4em;
+        }
+
+        
+        .container {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.6); /* Сделал контейнер светлее */
+            border-radius: 15px;
+            margin: 120px auto 50px;
+            width: 80%;
+            max-width: 700px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            transform: scale(0.98);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: scale(1);
+        }
+
+        h1, h2, p {
+            margin: 15px 0;
+            font-size: 1.5em;
+        }
+
+        .links a {
+            display: block;
+            color: #1da1f2;
+            text-decoration: none;
+            margin: 8px 0;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #00b0ff;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #238636;
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin: 20px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-btn:hover {
+            background-color: #2ea043;
+            transform: translateY(-4px);
+        }
+
+        .download-btn.active {
+            background-color: #1da1f2;
+        }
+
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #ffffffb6;
+            border-radius: 50%;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translate(0, -100vh);
+            }
+            100% {
+                transform: translate(var(--x), var(--y));
+            }
+        }
+
+        
+
+/* Стиль для модального окна */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* Темно-черный с высокой прозрачностью для звездного фона */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(15px); /* Размытие фона для улучшения видимости звезд */
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Содержимое модального окна */
+.modal-content {
+    background-color: rgba(25, 25, 25, 0.9); /* Почти черный с прозрачностью для контента */
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 70%;
+    max-width: 900px;
+    text-align: center;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.9); /* Тень для контраста */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.2); /* Легкая белая обводка для стиля */
+}
+
+/* Модальное окно при активации */
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* Блоки с версиями */
+.version-box.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Контейнер для блоков с версиями */
+.version-container {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 20px;
+    gap: 30px;
+}
+
+/* Блоки с информацией о версиях */
+.version-box {
+    background-color: rgba(35, 35, 35, 0.85); /* Темный фон с высокой прозрачностью */
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.292); /* Увеличена тень для контраста */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 45%;
+}
+
+/* Эффект при наведении на блок версии */
+.version-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 50px rgba(76, 19, 87, 0.325);
+}
+
+/* Заголовки блоков с версиями */
+.version-box h3 {
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    color: #ffffff88;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.588);
+}
+
+/* Описание блоков с версиями */
+.version-box p {
+    font-size: 1em;
+    color: #d1d1d168;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    text-align: center;
+    font-weight: normal;
+}
+
+/* Кнопки в блоках версий */
+.version-box button {
+    padding: 12px 25px;
+    background-color: #238637b4;
+    color: rgba(255, 255, 255, 0.543);
+    border: none;
+    cursor: pointer;
+    border-radius: 25px;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-bottom: 10px;
+}
+
+
+/* Кнопка закрытия модального окна */
+.close-btn {
+    background-color: #9b4dca; /* Фиолетовый цвет для крестика */
+    font-size: 18px;
+    padding: 12px 20px;
+    margin-top: 20px;
+    border-radius: 50%;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); /* Легкое свечение для крестика */
+}
+
+/* Эффект при наведении на крестик */
+.close-btn:hover {
+    background-color: #8e24aa; /* Более темный фиолетовый при наведении */
+    transform: scale(1.1); /* Легкое увеличение при наведении */
+}
+
+        .arrow-left-4,
+.arrow-right-4,
+.arrow-top-4,
+.arrow-bottom-4 {
+    margin: 20px 8px;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+}
+.arrow-left-4 polygon,
+.arrow-right-4 polygon,
+.arrow-top-4 polygon,
+.arrow-bottom-4 polygon {
+    fill: #337AB7; 
+    transition: fill 0.5s ease-out;
+}
+.arrow-left-4 {
+    transform: rotate(180deg);
+}
+.arrow-top-4 {
+    transform: rotate(270deg);
+}
+.arrow-bottom-4 {
+    transform: rotate(90deg);
+}
+.arrow-left-4:hover polygon,
+.arrow-right-4:hover polygon,
+.arrow-top-4:hover polygon,
+.arrow-bottom-4:hover polygon {
+    fill: #BFE2FF;
+}
+
+        .glass-btn {
+            position: relative;
+            width: 220px;
+            height: 50px;
+            margin: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+        #tweakerContainer {
+            display: flex;
+            justify-content: center; /* Centers horizontally */
+            align-items: center;     /* Centers vertically */
+            flex-direction: column;  /* Ensures vertical layout */
+            height: 100%;            /* Takes up full height of parent */
+        }
+        .glass-btn a {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 15px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            padding: 0 10px;
+            letter-spacing: 1px;
+            text-decoration: none;
+            text-transform: uppercase;
+            overflow: hidden;
+            color: #fff;
+            font-family: "Roboto", sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 1;
+            transition: 0.5s;
+            backdrop-filter: blur(15px);
+        }
+        .glass-btn:hover a {
+            letter-spacing: 3px;
+        }
+        .glass-btn a:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0.15), transparent);
+            transform: skewX(45deg) translate(0);
+            transition: 0.5s;
+            filter: blur(0px);
+        }
+        .glass-btn:hover a:before {
+            transform: skewX(45deg) translate(200px);
+        }
+        .glass-btn a:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            transition: 0.5s;
+            border-radius: 30px;
+            z-index: -1;
+        }
+        .glass-btn:hover a:after {
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glass-btn:before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translatex(-50%);
+            bottom: -5px;
+            width: 30px;
+            height: 10px;
+            background: #f00;
+            border-radius: 10px;
+            transition: 0.5s;
+            transition-delay: 0.5;
+        }
+        .glass-btn:hover:before {
+            bottom: 0;
+            height: 50%;
+            width: 80%;
+            border-radius: 30px;
+        }
+        .glass-btn:after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translatex(-50%);
+            top: -5px;
+            width: 30px;
+            height: 10px;
+            background: #f00;
+            border-radius: 10px;
+            transition: 0.5s;
+            transition-delay: 0.5;
+        }
+        .glass-btn:hover:after {
+            top: 0;
+            height: 50%;
+            width: 80%;
+            border-radius: 30px;
+        }
+        .glass-btn.glass-btn-purple a:after,
+        .glass-btn.glass-btn-purple:before,
+        .glass-btn.glass-btn-purple:after {
+            background: #d747ff;
+            box-shadow: 0 0 5px hwb(279 28% 0%), 0 0 15px hwb(279 28% 0%), 0 0 30px hwb(279 28% 0%), 0 0 60px hwb(279 28% 0%);
+        }
+        .glass-btn.glass-btn-blue a:after,
+        .glass-btn.glass-btn-blue:before,
+        .glass-btn.glass-btn-blue:after {
+            background: #419cec;
+            box-shadow: 0 0 5px #419cec, 0 0 15px #419cec, 0 0 30px #419cec, 0 0 60px #419cec;
+        }
+        .glass-btn.glass-btn-green a:after,
+        .glass-btn.glass-btn-green:before,
+        .glass-btn.glass-btn-green:after {
+            background: #38ba35;
+            box-shadow: 0 0 5px #38ba35, 0 0 15px #38ba35, 0 0 30px #38ba35, 0 0 60px #38ba35;
+        }
+
+        .close-btn:hover {
+            background-color: #e53935;
+        }
+
+        .section-btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            background-color: #3a3a3a;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            margin: 10px 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .section-btn:hover {
+            background-color: #5e5e5e;
+            transform: translateY(-4px);
+        }
+
+        .section-btn.active {
+            background-color: #238636;
+        }
+.cl-btn-3 {
+	width: 26px;
+	height: 26px;
+	margin: 40px auto;
+	position: relative;
+	transform: rotate(45deg) scale(2);
+}
+
+.cl-btn-3 .top,
+.cl-btn-3 .bot {
+	display: block;
+	background: #337AB7;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	animation-timing-function: cubic-bezier(1, 0, 0, 1);
+	animation-iteration-count: 1;
+}
+
+.cl-btn-3 .top {
+	height: 100%;
+	width: 2px;
+	margin-left: -1px;
+	transform: skewY(45deg);
+	top: 0;
+}
+
+.cl-btn-3 .bot {
+	width: 100%;
+	height: 2px;
+	margin-top: -1px;
+	transform: skewX(-45deg);
+	left: 0;
+}
+
+@-webkit-keyframes top-out {
+	from {
+		top: 0%;
+		height: 100%;
+	}
+	to {
+		top: 200%;
+		height: 0%;
+	}
+}
+
+@keyframes top-out {
+	from {
+		top: 0%;
+		height: 100%;
+	}
+	to {
+		top: 200%;
+		height: 0%;
+	}
+}
+@-webkit-keyframes top-in {
+	from {
+		top: -100%;
+		height: 0%;
+	}
+	to {
+		top: 0%;
+		height: 100%;
+	}
+}
+@keyframes top-in {
+	from {
+		top: -100%;
+		height: 0%;
+	}
+	to {
+		top: 0%;
+		height: 100%;
+	}
+}
+@-webkit-keyframes bot-out {
+	from {
+		left: 0%;
+		width: 100%;
+	}
+	to {
+		left: 200%;
+		width: 0%;
+	}
+}
+@keyframes bot-out {
+	from {
+		left: 0%;
+		width: 100%;
+	}
+	to {
+		left: 200%;
+		width: 0%;
+	}
+}
+@-webkit-keyframes bot-in {
+	from {
+		left: -100%;
+		width: 0%;
+	}
+	to {
+		left: 0%;
+		width: 100%;
+	}
+}
+@keyframes bot-in {
+	from {
+		left: -100%;
+		width: 0%;
+	}
+	to {
+		left: 0%;
+		width: 100%;
+	}
+}
+.cl-btn-3:hover {
+	cursor: pointer;
+}
+.cl-btn-3:hover .top {
+	animation: top-out 0.25s forwards, top-in 0.25s forwards 0.25s;
+}
+.cl-btn-3:hover .bot {
+	animation: bot-out 0.25s forwards 0.1s, bot-in 0.25s forwards 0.35s;
+}
+
+.download-btn-linux {
+    font-size: 14px;
+    color: #b12efc;
+    text-decoration: none;
+}
+
+.arch-icon {
+    filter: brightness(0) invert(1); /* Makes the icon white */
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+
+#mobile-warning {
+    display: none;
+    text-align: center;
+    background-color: #ffcccc;
+    padding: 20px;
+    border: 1px solid #ff0000;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+a:active .arch-icon {
+    opacity: 1; /* Убедитесь, что иконка остается видимой */
+}
+
+.windows-icon {
+    filter: brightness(0) invert(1); /* Делаем иконку белой */
+}
+
+
+
+
+</style>
+
+    <!-- Верхняя панель -->
+    <div class="top-panel">
+        <div class="stars-container" id="stars-container"></div>
+        <!-- Стрелка, открывающая сайт -->
+        <span class="nav-arrow" onclick="window.location.href='https://mihatskiyi13.github.io/de3nake.mihatskiyi13/'">&#8592;</span>
+        <img id="pageIcon" src="icon.jpg" alt="Icon">
+        <span id="pageTitle">Сборка виндовс</span>
+        <span class="nav-arrow" onclick="window.location.href='https://mihatskiyi13.github.io/de3nake.mihatskiyi13.v2/'">&#8594;</span>
+
+
+        </a>
+    </div>
+
+</head>
+<body>
+    <div class="container" id="optimizationContainer" style="display: block;">
+        <h1>Сборка Виндовс 11</h1>
+        <p>Автор: MiHaTsKiYi</p>
+        <p>Идея: MiHaTsKiYi</p>
+        <div class="links"></div>
+        <p>Сборка виндовс 11. Был вырезан Windows Defender.</p>
+        <p>А так в основном все так и осталось, сборка игровая.</p>  
+        <div class="glass-btn glass-btn-purple">
+            <a href="#url" id="downloadwin" onclick="downloadwin()">
+                <img src="windows.svg" alt="Windows" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle; filter: brightness(0) invert(1);">
+                Скачать
+            </a>
+        </div>
+    </div>
+
+    <div class="links-container">
+        <a href="https://t.me/DE3NAKE" target="_blank">
+            <img src="telegram.svg" alt="Telegram Icon" class="social-icon"> Telegram: DE3NAKE
+        </a>
+        
+        <a href="https://t.me/mihatskiyi" target="_blank">
+            <img src="telegram.svg" alt="Telegram Icon" class="social-icon"> Telegram: Mihatskiyi
+        </a>
+        
+        <a href="https://github.com/MiHaTsKiYi13" target="_blank">
+            <img src="github.svg" alt="GitHub Icon" class="social-icon"> GitHub: MiHaTsKiYi
+        </a>
+    </div>
+
+    <script>
+
+        const numberOfStars = 100; // Количество звезд
+        for (let i = 0; i < numberOfStars; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+    
+            // Рандомизация позиции начальной точки звезды
+            const x = Math.random() * 100; // Случайное значение по оси X
+            const y = Math.random() * 100; // Случайное значение по оси Y
+            const size = Math.random() * 3 + 1; // Случайный размер звезды от 1 до 3
+            const speed = Math.random() * 5 + 5; // Случайная скорость от 5 до 10 секунд
+            const rotation = Math.random() * 360; // Рандомный угол для вращения звезды
+    
+            // Добавляем CSS-переменные для анимации
+            star.style.setProperty('--x', `${x}vw`); // Начальная позиция X
+            star.style.setProperty('--y', `${y}vh`); // Начальная позиция Y
+            star.style.setProperty('--size', `${size}px`); // Размер звезды
+            star.style.setProperty('--rotation', `${rotation}deg`); // Угол вращения
+    
+            // Задание свойств для анимации
+            star.style.animationDuration = `${speed}s`; // Время анимации
+            star.style.animationDelay = `${Math.random() * 5}s`; // Случайная задержка старта
+    
+            // Устанавливаем плавную прозрачность и анимацию движения
+            star.style.opacity = Math.random() * 0.5 + 0.5; // Случайная прозрачность
+            star.style.animationName = 'fall'; // Имя анимации
+    
+            // Добавляем звезды в body
+            document.body.appendChild(star);
+        }
+    
+    
+    // Запуск функции для генерации звезд
+    generateStars();
+    
+    // CSS для анимации и стилей
+    const style = document.createElement('style');
+    style.textContent = `
+        .star {
+            position: absolute;
+            width: var(--size);
+            height: var(--size);
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            animation: fall 10s infinite linear, rotate 10s infinite linear;
+        }
+    
+        @keyframes fall {
+            0% {
+                transform: translate(var(--x), var(--y)) rotate(var(--rotation));
+            }
+            100% {
+                transform: translate(var(--x + Math.random() * 10 - 5), 100vh) rotate(var(--rotation + 360));
+            }
+        }
+    
+        @keyframes rotate {
+            0% {
+                transform: rotate(var(--rotation));
+            }
+            100% {
+                transform: rotate(var(--rotation + 360));
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+        // Скачивание пак с исправлениями 
+        function downloadwin() {
+            window.open('https://disk.yandex.ru/d/lfBxxQsKvlww3A', '_blank');
+        }
+
+        window.onload = function() {
+            document.querySelector('.preloader').classList.add("preloader-remove");
+        };
+    </script>
+</body>
+</html>
